@@ -1,42 +1,49 @@
 # AWS SAP-C02
 
-## Domain 1: Design Solutions for Organizational Complexity (26%)
+## Identity & Federation
+- [ ] Placeholder topic
 
-### 1.1 Placeholder section
-- [x] Placeholder topic A
-- [x] Placeholder topic B
-- [ ] Placeholder topic C
+## Security
+- [ ] Placeholder topic
 
-### 1.2 Placeholder section
-- [ ] Placeholder topic A
-- [ ] Placeholder topic B
+## Compute & Load Balancing
+- [ ] Placeholder topic
 
-## Domain 2: Design for New Solutions (29%)
+## Storage
+- [ ] Placeholder topic
 
-### 2.1 Placeholder section
-- [x] Placeholder topic A
-- [ ] Placeholder topic B
+## Caching
+- [ ] Placeholder topic
 
-### 2.2 Placeholder section
-- [ ] Placeholder topic A
-- [ ] Placeholder topic B
-- [ ] Placeholder topic C
+## Databases
+- [ ] Placeholder topic
 
-## Domain 3: Continuous Improvement for Existing Solutions (25%)
+## Service Communication
+- [ ] Placeholder topic
 
-### 3.1 Placeholder section
-- [ ] Placeholder topic A
-- [ ] Placeholder topic B
+## Data Engineering
+- [ ] Placeholder topic
 
-### 3.2 Placeholder section
-- [ ] Placeholder topic A
+## Monitoring
+- [ ] Placeholder topic
 
-## Domain 4: Accelerate Workload Migration and Modernization (20%)
+## Deployment & Instance Management
+- [ ] Placeholder topic
 
-### 4.1 Placeholder section
-- [ ] Placeholder topic A
-- [ ] Placeholder topic B
+## Cost Control
+- [ ] Placeholder topic
 
-### 4.2 Placeholder section
-- [ ] Placeholder topic A
-- [ ] Placeholder topic B
+## Migrations
+- [ ] Placeholder topic
+
+## Amazon VPC
+- [ ] Placeholder topic
+
+## Machine Learning
+- [ ] Placeholder topic
+
+## Other Services
+- [ ] Placeholder topic
+
+## Exam Preparation
+- [ ] Placeholder topic
