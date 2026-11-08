@@ -8,22 +8,28 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18/dist/style.css">
   <style>
     :root {
-      --bg: #ffffff;
+      --bg: #fbfaf7;
+      --panel: #ffffff;
       --fg: #1f2328;
-      --muted: #59636e;
-      --border: #d1d9e0;
-      --accent: #1f883d;
-      --track: #e6e9ec;
+      --muted: #5f6873;
+      --border: #e3e0d8;
+      --accent: #ff9900;
+      --track: #ece9e1;
+      --done: #1f883d;
+      --match: #fff1b8;
+      --match-ring: #f2b705;
     }
-    @media (prefers-color-scheme: dark) {
-      :root {
-        --bg: #0d1117;
-        --fg: #e6edf3;
-        --muted: #9198a1;
-        --border: #30363d;
-        --accent: #3fb950;
-        --track: #21262d;
-      }
+    html.markmap-dark {
+      --bg: #0f141b;
+      --panel: #161c25;
+      --fg: #e6edf3;
+      --muted: #9aa4b1;
+      --border: #2a323d;
+      --accent: #ff9900;
+      --track: #232b36;
+      --done: #3fb950;
+      --match: #4a3b00;
+      --match-ring: #f2b705;
     }
     * { box-sizing: border-box; }
     html, body {
@@ -34,19 +40,71 @@
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
     }
     body { display: flex; flex-direction: column; }
+
     header {
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      justify-content: space-between;
-      gap: 8px 24px;
+      gap: 10px 20px;
       padding: 12px 16px;
+      background: var(--panel);
       border-bottom: 1px solid var(--border);
+      border-top: 3px solid var(--accent);
     }
-    h1 { font-size: 1.05rem; margin: 0; font-weight: 600; }
-    .progress { display: flex; align-items: center; gap: 10px; font-size: 0.875rem; color: var(--muted); }
-    .bar { width: 160px; height: 8px; background: var(--track); border-radius: 4px; overflow: hidden; }
-    .bar > span { display: block; height: 100%; width: 0; background: var(--accent); transition: width 0.4s ease; }
+    h1 { font-size: 1rem; margin: 0; font-weight: 650; white-space: nowrap; }
+    h1 span { color: var(--accent); }
+
+    .progress { display: flex; align-items: center; gap: 10px; font-size: 0.85rem; color: var(--muted); }
+    .bar { width: 140px; height: 8px; background: var(--track); border-radius: 4px; overflow: hidden; }
+    .bar > span { display: block; height: 100%; width: 0; background: linear-gradient(90deg, var(--accent), var(--done)); transition: width 0.5s ease; }
+
+    .tools { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-left: auto; }
+    .search { position: relative; }
+    .search input {
+      width: 280px;
+      max-width: 60vw;
+      padding: 6px 90px 6px 30px;
+      font: inherit;
+      font-size: 0.85rem;
+      color: var(--fg);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      outline: none;
+    }
+    .search input:focus { border-color: var(--accent); }
+    .search::before {
+      content: "⌕";
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-52%);
+      color: var(--muted);
+      font-size: 0.95rem;
+      pointer-events: none;
+    }
+    .search small { position: absolute; right: 30px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 0.72rem; }
+    button {
+      padding: 6px 10px;
+      font: inherit;
+      font-size: 0.8rem;
+      color: var(--fg);
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    button:hover { border-color: var(--accent); }
+
+    .legend {
+      flex-basis: 100%;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px 16px;
+      font-size: 0.75rem;
+      color: var(--muted);
+    }
+
     main { position: relative; flex: 1; min-height: 0; }
     #mindmap { display: block; width: 100%; height: 100%; }
     #status {
@@ -58,14 +116,60 @@
       text-align: center;
       color: var(--muted);
     }
+
+    /* Markmap node tweaks */
+    .markmap-foreign code { font-size: 0.85em; padding: 0 3px; border-radius: 3px; background: var(--track); }
+    .markmap-foreign pre { margin: 4px 0; padding: 8px; border-radius: 6px; background: var(--track); font-size: 0.75rem; }
+    .markmap-foreign pre code { background: none; padding: 0; }
+    .markmap-foreign .sec-progress {
+      display: inline-block;
+      margin-left: 6px;
+      padding: 0 6px;
+      font-size: 0.7em;
+      font-weight: 600;
+      line-height: 1.5;
+      color: var(--muted);
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      vertical-align: middle;
+    }
+    .markmap-foreign .sec-progress.complete { color: var(--done); border-color: var(--done); }
+    g.is-match .markmap-foreign > div > div {
+      background: var(--match);
+      box-shadow: 0 0 0 2px var(--match-ring);
+      border-radius: 4px;
+    }
+
+    @media (max-width: 640px) {
+      .tools { margin-left: 0; width: 100%; }
+      .search { flex-basis: 100%; }
+      .search input { width: 100%; max-width: none; }
+      .legend { display: none; }
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>AWS Solutions Architect – Professional</h1>
+    <h1><span>AWS</span> Solutions Architect – Professional</h1>
     <div class="progress" aria-live="polite">
       <div class="bar"><span id="bar"></span></div>
       <span id="count">Loading…</span>
+    </div>
+    <div class="tools">
+      <label class="search">
+        <input id="search" type="search" placeholder="Search topics…" autocomplete="off" aria-label="Search the mindmap">
+        <small id="hits"></small>
+      </label>
+      <button id="sections" type="button" title="Collapse to the 16 course sections">Sections</button>
+      <button id="todo" type="button" title="Open the sections that still have unticked lectures">Show to-do</button>
+      <button id="expand" type="button" title="Expand every node">Expand all</button>
+    </div>
+    <div class="legend">
+      <span>💡 exam tip</span>
+      <span>⚠️ gotcha</span>
+      <span>🧭 decision guide</span>
+      <span>✅ AWS-recommended</span>
+      <span>Click a circle to expand · Ctrl/⌘-click to expand a whole branch · <kbd>/</kbd> to search</span>
     </div>
   </header>
 
@@ -82,48 +186,146 @@
 
   <script>
     (async () => {
-      const { Transformer, Markmap, Toolbar, loadCSS, loadJS } = window.markmap;
+      const { Transformer, Markmap, Toolbar, deriveOptions, loadCSS, loadJS } = window.markmap;
       const status = document.getElementById('status');
 
-      // Use Markmap's dark node styling when the OS is in dark mode
+      // Follow the OS theme; the toolbar's theme button toggles the same class
       if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
         document.documentElement.classList.add('markmap-dark');
+      }
+
+      const DONE = /^\s*[-*+] \[[xX]\]/;
+      const TODO = /^\s*[-*+] \[ \]/;
+
+      // Count checkboxes overall and per "## " section, and add a badge to each section heading
+      function annotate(markdown) {
+        const lines = markdown.split('\n');
+        let done = 0, total = 0, section = null;
+        const sections = [];
+        for (let i = 0; i < lines.length; i++) {
+          if (/^## /.test(lines[i])) {
+            section = { line: i, done: 0, total: 0 };
+            sections.push(section);
+          } else if (DONE.test(lines[i]) || TODO.test(lines[i])) {
+            const isDone = DONE.test(lines[i]);
+            total++; if (isDone) done++;
+            if (section) { section.total++; if (isDone) section.done++; }
+          }
+        }
+        for (const s of sections) {
+          const cls = s.total && s.done === s.total ? 'sec-progress complete' : 'sec-progress';
+          lines[s.line] += ` <span class="${cls}">${s.done}/${s.total}</span>`;
+        }
+        return { markdown: lines.join('\n'), done, total };
       }
 
       try {
         // The mindmap content lives in mindmap.md, next to this file
         const res = await fetch('mindmap.md', { cache: 'no-cache' });
         if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const markdown = await res.text();
+        const { markdown, done, total } = annotate(await res.text());
 
-        // Progress = ticked checkboxes / all checkboxes in mindmap.md
-        const done = (markdown.match(/^\s*[-*+] \[[xX]\]/gm) || []).length;
-        const todo = (markdown.match(/^\s*[-*+] \[ \]/gm) || []).length;
-        const total = done + todo;
         const pct = total ? Math.round((done / total) * 100) : 0;
         document.getElementById('bar').style.width = pct + '%';
-        document.getElementById('count').textContent = `${done} / ${total} topics complete (${pct}%)`;
+        document.getElementById('count').textContent = `${done} / ${total} lectures (${pct}%)`;
 
-        // Turn the Markdown into a mindmap
+        // Turn the Markdown into a mindmap; options come from the file's front matter
         const transformer = new Transformer();
-        const { root, features } = transformer.transform(markdown);
+        const { root, features, frontmatter } = transformer.transform(markdown);
         const { styles, scripts } = transformer.getUsedAssets(features);
         if (styles) loadCSS(styles);
         if (scripts) loadJS(scripts, { getMarkmap: () => window.markmap });
 
-        const mm = Markmap.create('#mindmap', {
-          initialExpandLevel: 2, // show the root and domains; click a node to expand
-          colorFreezeLevel: 2,   // each domain keeps one colour for all its children
-          maxWidth: 320,
-          duration: 300,
-        }, root);
+        const mm = Markmap.create('#mindmap', deriveOptions(frontmatter?.markmap), root);
 
-        // Zoom in / zoom out / fit-to-screen buttons
+        // Zoom in / zoom out / fit / theme buttons
         const { el } = Toolbar.create(mm);
         el.style.cssText = 'position:absolute;right:16px;bottom:16px;';
         document.querySelector('main').append(el);
-
         status.remove();
+
+        // ---- Helpers for walking the tree ----
+        const textOf = (() => {
+          const div = document.createElement('div');
+          const cache = new WeakMap();
+          return (node) => {
+            if (!cache.has(node)) { div.innerHTML = node.content; cache.set(node, div.textContent.toLowerCase()); }
+            return cache.get(node);
+          };
+        })();
+        const walk = (node, fn, parents = []) => {
+          fn(node, parents);
+          (node.children || []).forEach((c) => walk(c, fn, [...parents, node]));
+        };
+        const setFold = (node, fold) => { node.payload = { ...node.payload, fold: fold ? 1 : 0 }; };
+
+        let matches = new Set();
+        let matchIds = new Set();
+        const paintMatches = () => {
+          mm.svg.selectAll('g.markmap-node').classed('is-match', (d) => matchIds.has(d.state?.id));
+        };
+        const rerender = async (focus) => {
+          await mm.renderData();
+          // Markmap resets node classes as its animation finishes, so paint again afterwards
+          paintMatches();
+          setTimeout(paintMatches, (mm.options.duration || 500) + 100);
+          await mm.fit();
+          if (focus) await mm.ensureVisible(focus, { bottom: 80 });
+        };
+
+        // Collapse to sections
+        document.getElementById('sections').onclick = () => {
+          walk(mm.state.data, (n, parents) => setFold(n, parents.length >= 1 && n.children?.length));
+          rerender();
+        };
+
+        // Expand everything
+        document.getElementById('expand').onclick = () => {
+          walk(mm.state.data, (n) => setFold(n, false));
+          rerender();
+        };
+
+        // Open the sections that still have unticked lectures; fold finished ones
+        document.getElementById('todo').onclick = () => {
+          walk(mm.state.data, (n, parents) => {
+            if (!n.children?.length) return;
+            if (parents.length === 0) setFold(n, false);
+            else if (parents.length === 1) setFold(n, n.content.includes('sec-progress complete'));
+            else setFold(n, true);
+          });
+          rerender();
+        };
+
+        // Search: highlight matches and unfold their ancestors
+        const input = document.getElementById('search');
+        const hits = document.getElementById('hits');
+        let timer;
+        input.addEventListener('input', () => {
+          clearTimeout(timer);
+          timer = setTimeout(() => {
+            const q = input.value.trim().toLowerCase();
+            matches = new Set();
+            // Start from the section overview, then open only the paths to matches
+            walk(mm.state.data, (n, parents) => setFold(n, parents.length >= 1 && n.children?.length));
+            if (q.length >= 2) {
+              walk(mm.state.data, (n, parents) => {
+                if (parents.length && textOf(n).includes(q)) {
+                  matches.add(n);
+                  parents.forEach((p) => setFold(p, false));
+                }
+              });
+            }
+            matchIds = new Set([...matches].map((n) => n.state?.id));
+            hits.textContent = q.length >= 2 ? `${matches.size} found` : '';
+            rerender(matches.values().next().value);
+          }, 200);
+        });
+
+        // Press "/" to jump to search, Esc to clear
+        document.addEventListener('keydown', (e) => {
+          if (e.key === '/' && document.activeElement !== input) { e.preventDefault(); input.focus(); }
+          if (e.key === 'Escape' && document.activeElement === input) { input.value = ''; input.dispatchEvent(new Event('input')); input.blur(); }
+        });
       } catch (err) {
         status.textContent =
           `Could not load mindmap.md (${err.message}). ` +
