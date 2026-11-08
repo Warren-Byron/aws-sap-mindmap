@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AWS SAP Mindmap</title>
+  <meta name="description" content="Interactive mindmap for tracking study progress through the AWS Certified Solutions Architect – Professional (SAP-C02) course.">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18/dist/style.css">
+  <style>
+    :root {
+      --bg: #ffffff;
+      --fg: #1f2328;
+      --muted: #59636e;
+      --border: #d1d9e0;
+      --accent: #1f883d;
+      --track: #e6e9ec;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #0d1117;
+        --fg: #e6edf3;
+        --muted: #9198a1;
+        --border: #30363d;
+        --accent: #3fb950;
+        --track: #21262d;
+      }
+    }
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      height: 100%;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    }
+    body { display: flex; flex-direction: column; }
+    header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px 24px;
+      padding: 12px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    h1 { font-size: 1.05rem; margin: 0; font-weight: 600; }
+    .progress { display: flex; align-items: center; gap: 10px; font-size: 0.875rem; color: var(--muted); }
+    .bar { width: 160px; height: 8px; background: var(--track); border-radius: 4px; overflow: hidden; }
+    .bar > span { display: block; height: 100%; width: 0; background: var(--accent); transition: width 0.4s ease; }
+    main { position: relative; flex: 1; min-height: 0; }
+    #mindmap { display: block; width: 100%; height: 100%; }
+    #status {
+      position: absolute;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      text-align: center;
+      color: var(--muted);
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AWS Solutions Architect – Professional</h1>
+    <div class="progress" aria-live="polite">
+      <div class="bar"><span id="bar"></span></div>
+      <span id="count">Loading…</span>
+    </div>
+  </header>
+
+  <main>
+    <svg id="mindmap"></svg>
+    <div id="status">Loading mindmap…</div>
+  </main>
+
+  <!-- Markmap and its dependencies, loaded from the jsDelivr CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.18"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-lib@0.18/dist/browser/index.iife.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/markmap-toolbar@0.18/dist/index.js"></script>
+
+  <script>
+    (async () => {
+      const { Transformer, Markmap, Toolbar, loadCSS, loadJS } = window.markmap;
+      const status = document.getElementById('status');
+
+      // Use Markmap's dark node styling when the OS is in dark mode
+      if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        document.documentElement.classList.add('markmap-dark');
+      }
+
+      try {
+        // The mindmap content lives in mindmap.md, next to this file
+        const res = await fetch('mindmap.md', { cache: 'no-cache' });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const markdown = await res.text();
+
+        // Progress = ticked checkboxes / all checkboxes in mindmap.md
+        const done = (markdown.match(/^\s*[-*+] \[[xX]\]/gm) || []).length;
+        const todo = (markdown.match(/^\s*[-*+] \[ \]/gm) || []).length;
+        const total = done + todo;
+        const pct = total ? Math.round((done / total) * 100) : 0;
+        document.getElementById('bar').style.width = pct + '%';
+        document.getElementById('count').textContent = `${done} / ${total} topics complete (${pct}%)`;
+
+        // Turn the Markdown into a mindmap
+        const transformer = new Transformer();
+        const { root, features } = transformer.transform(markdown);
+        const { styles, scripts } = transformer.getUsedAssets(features);
+        if (styles) loadCSS(styles);
+        if (scripts) loadJS(scripts, { getMarkmap: () => window.markmap });
+
+        const mm = Markmap.create('#mindmap', {
+          initialExpandLevel: 2, // show the root and domains; click a node to expand
+          colorFreezeLevel: 2,   // each domain keeps one colour for all its children
+          maxWidth: 320,
+          duration: 300,
+        }, root);
+
+        // Zoom in / zoom out / fit-to-screen buttons
+        const { el } = Toolbar.create(mm);
+        el.style.cssText = 'position:absolute;right:16px;bottom:16px;';
+        document.querySelector('main').append(el);
+
+        status.remove();
+      } catch (err) {
+        status.textContent =
+          `Could not load mindmap.md (${err.message}). ` +
+          'If you opened this file directly from disk, run a local web server instead (see README).';
+        console.error(err);
+      }
+    })();
+  </script>
+</body>
+</html>
